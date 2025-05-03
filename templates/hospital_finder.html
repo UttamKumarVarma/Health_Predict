@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Finder</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Hospital Finder</h1>
+    </div>
+    
+    <div class="container">
+        <div class="hospital-finder">
+            <form method="POST" id="hospitalForm">
+                <div class="form-section">
+                    <div class="city-selector">
+                        <div class="form-group" style="flex-grow: 1;">
+                            <label for="city">Select City:</label>
+                            <select id="city" name="city" required>
+                                {% for city in cities %}
+                                    <option value="{{ city }}" {% if city == selected_city %}selected{% endif %}>{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit">Find Hospitals</button>
+                    </div>
+                </div>
+            </form>
+
+            {% if hospitals %}
+            <div class="results">
+                <h2>Hospitals in {{ selected_city }}</h2>
+                <ul class="hospital-list">
+                    {% for hospital in hospitals %}
+                        <li>{{ hospital }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <a href="/" class="back-button">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

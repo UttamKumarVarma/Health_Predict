@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ischemic Heart Disease Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container result-container">
+        <h1>Ischemic Heart Disease Risk Prediction</h1>
+        <div class="result-card {{ 'high-risk' if risk_level == 'High' else 'low-risk' }}">
+            <h2>Your Heart Disease Risk: {{ probability }}%</h2>
+            <p class="risk-level">{{ risk_level }} Risk</p>
+            
+            <div class="recommendations">
+                <h3>Recommendations:</h3>
+                <ul>
+                    {% if risk_level == 'High' %}
+                        <li>Consult a cardiologist immediately</li>
+                    {% else %}
+                        <li>Maintain cardiovascular health</li>
+                        <li>Get annual cholesterol checks</li>
+                        <li>Continue regular physical activity</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <a href="/disease_predictor" class="back-button">Back to Disease Predictor</a>
+    </div>
+</body>
+</html>

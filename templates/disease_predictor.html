@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='HospitalBackground.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 {
+            color: red;
+        }
+        label {
+            font-size: 18px;
+            margin: 10px;
+            color: red;
+        }
+        input, select {
+            margin: 5px;
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        #results {
+            margin: 20px auto;
+            width: 80%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid red;
+        }
+        th {
+            background-color: red;
+            color: white;
+        }
+        td {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Disease Predictor</h1>
+    <form id="predictionForm">
+        <label>Age: <input type="number" id="age" required></label><br>
+        <label>Height (cm): <input type="number" id="height" required></label><br>
+        <label>Weight (kg): <input type="number" id="weight" required></label><br>
+        <label>BMI: <input type="number" id="bmi" required></label><br>
+        <label>Smoking Status:
+            <select id="smokingStatus">
+                <option value="Never smoker (finding)">Never Smoker</option>
+                <option value="Ex-smoker (finding)">Ex-Smoker</option>
+                <option value="Current every day smoker (finding)">Current Smoker</option>
+            </select>
+        </label><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        document.getElementById("predictionForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let userInput = {
+                AGE: document.getElementById("age").value,
+                "Body Height": document.getElementById("height").value,
+                "Body Weight": document.getElementById("weight").value,
+                "Body mass index (BMI) [Ratio]": document.getElementById("bmi").value,
+                "Tobacco smoking status": document.getElementById("smokingStatus").value
+            };
+
+            fetch("/disease_predictor", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userInput)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then(data => {
+                let resultsDiv = document.getElementById("results");
+                resultsDiv.innerHTML = "<h2>Predicted Diseases:</h2>";
+
+                if (data.error) {
+                    resultsDiv.innerHTML += `<p style="color: red;">Error: ${data.error}</p>`;
+                } else if (Object.keys(data).length === 0) {
+                    resultsDiv.innerHTML += `<p>No diseases predicted based on the input data.</p>`;
+                } else {
+                    let tableHTML = `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Disease</th>
+                                    <th>Probability (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    for (let disease in data) {
+                        tableHTML += `
+                            <tr>
+                                <td>${disease}</td>
+                                <td>${data[disease].toFixed(2)}%</td>
+                            </tr>
+                        `;
+                    }
+                    tableHTML += `
+                            </tbody>
+                        </table>
+                    `;
+                    resultsDiv.innerHTML += tableHTML;
+
+                    localStorage.setItem("predictedDiseases", JSON.stringify(data));
+                    resultsDiv.innerHTML += `<button onclick="window.location.href='/recommended_medicines'">See Recommended Medicines</button>`;
+                }
+            })
+            .catch(error => {
+                console.error("Error during prediction:", error);
+                document.getElementById("results").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            });
+        });
+    </script>
+</body>
+</html>

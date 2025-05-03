@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended Medicines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='HospitalBackground.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 {
+            color: red;
+        }
+        #medicines {
+            margin: 20px auto;
+            width: 80%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid red;
+        }
+        th {
+            background-color: red;
+            color: white;
+        }
+        td {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recommended Medicines</h1>
+    <div id="medicines"></div>
+
+    <script>
+        let diseases = JSON.parse(localStorage.getItem("predictedDiseases")) || {};
+
+        if (Object.keys(diseases).length === 0) {
+            document.getElementById("medicines").innerHTML = "<p>No diseases predicted.</p>";
+        } else {
+            fetch("/recommended_medicines", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ diseases: Object.keys(diseases) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let htmlContent = "<table><thead><tr><th>Disease</th><th>Medicines</th></tr></thead><tbody>";
+                for (let disease in data) {
+                    htmlContent += `<tr><td>${disease}</td><td>${data[disease].join(", ")}</td></tr>`;
+                }
+                htmlContent += "</tbody></table>";
+                document.getElementById("medicines").innerHTML = htmlContent;
+            });
+        }
+    </script>
+</body>
+</html>

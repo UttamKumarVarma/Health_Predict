@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disease Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Disease Predictor</h1>
+    </div>
+    
+    <div class="container">
+        <div class="features">
+            <a href="/diabetes_prediction" class="feature-card">
+                <h2>Diabetes Prediction</h2>
+                <p>Assess your risk for Type 2 Diabetes</p>
+            </a>
+            
+            <a href="/ckd_prediction" class="feature-card">
+                <h2>Kidney Disease</h2>
+                <p>Check your Chronic Kidney Disease risk</p>
+            </a>
+            
+            <a href="/ischemic_prediction" class="feature-card">
+                <h2>Heart Disease</h2>
+                <p>Evaluate Ischemic Heart Disease risk</p>
+            </a>
+        </div>
+        
+        <a href="/" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>
